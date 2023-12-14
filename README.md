@@ -17,6 +17,8 @@ PST aims to bridge the gap between theatres and audiences by providing a robust 
 To get started with XYZ, follow these steps:
 
 Clone the Repository: git clone [https://github.com/xyz-movie-ticket-platform](https://github.com/yeshendra-chauhan/publicis-ticketing)
+
 Installation: Follow the installation guide in the docs directory.
+
 Usage: Refer to the documentation to understand how to utilize the platform for both B2B and B2C purposes.
 
