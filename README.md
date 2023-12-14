@@ -7,9 +7,13 @@ PST aims to bridge the gap between theatres and audiences by providing a robust 
 # Key Features
 
 **B2B Solutions**: Theatre partners can effortlessly onboard their venues, expanding their reach and accessibility to customers.
+
 **B2C Experience**: Users can browse through movies, explore different cities, languages, and genres, and seamlessly book tickets in advance.
+
 **Multi-city Support**: Access movies and book tickets across various cities within a unified platform.
+
 **Multilingual Interface**: Support for multiple languages to cater to a diverse audience.
+
 **Genre Diversity**: Explore movies spanning diverse genres to suit different preferences.
 
 
