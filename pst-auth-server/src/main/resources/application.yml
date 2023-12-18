@@ -1,0 +1,20 @@
+# Server configurations
+server:
+  port: 8083
+
+management:
+  server:
+    port: 8083
+
+
+# Logging configurations
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: DEBUG
+      
+# Spring application configurations
+spring:
+  application:
+    name: pst-auth-service    
+    
