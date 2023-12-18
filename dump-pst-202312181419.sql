@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `booking`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `booking` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `show_id` int(11) DEFAULT NULL,
   `booking_date` datetime DEFAULT NULL,
@@ -35,9 +35,7 @@ CREATE TABLE `booking` (
   `show_time_to` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  KEY `theater_id` (`show_id`),
-  CONSTRAINT `booking_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
-  CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`show_id`) REFERENCES `theater` (`id`)
+  KEY `theater_id` (`show_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -58,11 +56,14 @@ DROP TABLE IF EXISTS `booking_cart`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `booking_cart` (
-  `id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `cart_created_at` datetime DEFAULT NULL,
   `status` varchar(100) DEFAULT NULL,
-  `payment_status` varchar(100) DEFAULT NULL
+  `payment_status` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `booking_cart_FK` (`user_id`),
+  CONSTRAINT `booking_cart_FK` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -83,11 +84,16 @@ DROP TABLE IF EXISTS `booking_cart_seats`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `booking_cart_seats` (
-  `id` int(11) DEFAULT NULL,
-  `theater_seat_id` int(11) DEFAULT NULL,
-  `show_id` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `show_id` int(11) NOT NULL,
   `show_date` datetime DEFAULT NULL,
-  `selected_at` datetime DEFAULT NULL
+  `selected_at` datetime DEFAULT NULL,
+  `screen_seat_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `booking_cart_seats_FK` (`show_id`),
+  KEY `booking_cart_seats_FK_1` (`screen_seat_id`),
+  CONSTRAINT `booking_cart_seats_FK` FOREIGN KEY (`show_id`) REFERENCES `shows` (`id`),
+  CONSTRAINT `booking_cart_seats_FK_1` FOREIGN KEY (`screen_seat_id`) REFERENCES `screen_seat` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -108,13 +114,18 @@ DROP TABLE IF EXISTS `booking_seat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `booking_seat` (
-  `id` int(10) unsigned NOT NULL,
-  `booking_id` int(10) unsigned NOT NULL,
-  `screen_seat_id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `booking_id` int(11) NOT NULL,
+  `screen_seat_id` int(11) NOT NULL,
   `price` float NOT NULL,
   `discount` float DEFAULT NULL,
   `net_price` float DEFAULT NULL,
-  `discount_code` varchar(100) DEFAULT NULL
+  `discount_code` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `booking_seat_FK` (`booking_id`),
+  KEY `booking_seat_FK_1` (`screen_seat_id`),
+  CONSTRAINT `booking_seat_FK` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`id`),
+  CONSTRAINT `booking_seat_FK_1` FOREIGN KEY (`screen_seat_id`) REFERENCES `screen_seat` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -135,10 +146,11 @@ DROP TABLE IF EXISTS `city`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `city` (
-  `id` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `state` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `state` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,14 +171,14 @@ DROP TABLE IF EXISTS `movie`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `movie` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(100) DEFAULT NULL,
   `genre` varchar(50) DEFAULT NULL,
   `lang` varchar(50) DEFAULT NULL,
   `release_date` date DEFAULT NULL,
   `duration_minutes` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -187,13 +199,15 @@ DROP TABLE IF EXISTS `payments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `payments` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `booking_cart_id` int(11) NOT NULL,
   `started_at` datetime NOT NULL,
   `completed_at` varchar(100) NOT NULL,
   `payment_status` varchar(100) NOT NULL,
   `gw_transaction_id` varchar(100) DEFAULT NULL,
-  `transaction_id` varchar(100) DEFAULT NULL
+  `transaction_id` varchar(100) DEFAULT NULL,
+  `booking_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -214,11 +228,12 @@ DROP TABLE IF EXISTS `screen`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `screen` (
-  `id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `theater_id` int(10) unsigned NOT NULL,
   `name` varchar(100) NOT NULL,
   `description` varchar(100) NOT NULL,
-  `status` varchar(20) NOT NULL
+  `status` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -239,15 +254,15 @@ DROP TABLE IF EXISTS `screen_seat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `screen_seat` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `screen_id` int(11) DEFAULT NULL,
   `seat_number` varchar(10) DEFAULT NULL,
   `status` varchar(10) DEFAULT NULL,
   `category` varchar(100) NOT NULL,
+  `row` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `theater_id` (`screen_id`),
-  CONSTRAINT `screen_seat_ibfk_1` FOREIGN KEY (`screen_id`) REFERENCES `theater` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  KEY `theater_id` (`screen_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -256,7 +271,7 @@ CREATE TABLE `screen_seat` (
 
 LOCK TABLES `screen_seat` WRITE;
 /*!40000 ALTER TABLE `screen_seat` DISABLE KEYS */;
-INSERT INTO `screen_seat` VALUES (1,1,'1A','ACTIVE','DEFAULT'),(2,1,'1B','ACTIVE','DEFAULT'),(3,1,'1C','ACTIVE','DEFAULT'),(4,1,'2A','ACTIVE','DEFAULT'),(5,1,'2B','ACTIVE','DEFAULT'),(6,1,'2C','ACTIVE','DEFAULT'),(7,2,'1A','ACTIVE','DEFAULT'),(8,2,'1B','ACTIVE','DEFAULT'),(9,2,'1C','ACTIVE','DEFAULT'),(10,2,'2A','ACTIVE','DEFAULT');
+INSERT INTO `screen_seat` VALUES (1,1,'1A','ACTIVE','DEFAULT',NULL),(2,1,'1B','ACTIVE','DEFAULT',NULL),(3,1,'1C','ACTIVE','DEFAULT',NULL),(4,1,'2A','ACTIVE','DEFAULT',NULL),(5,1,'2B','ACTIVE','DEFAULT',NULL),(6,1,'2C','ACTIVE','DEFAULT',NULL),(7,2,'1A','ACTIVE','DEFAULT',NULL),(8,2,'1B','ACTIVE','DEFAULT',NULL),(9,2,'1C','ACTIVE','DEFAULT',NULL),(10,2,'2A','ACTIVE','DEFAULT',NULL);
 /*!40000 ALTER TABLE `screen_seat` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -268,13 +283,16 @@ DROP TABLE IF EXISTS `show_price`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `show_price` (
-  `id` int(10) unsigned NOT NULL,
-  `show_id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `show_id` int(11) NOT NULL,
   `seat_category` varchar(100) DEFAULT NULL,
   `start_date` varchar(100) DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
   `price` float NOT NULL,
-  `price_type` char(1) DEFAULT NULL COMMENT 'D-Daily, W-Specific Week Days'
+  `price_type` char(1) DEFAULT NULL COMMENT 'D-Daily, W-Specific Week Days',
+  PRIMARY KEY (`id`),
+  KEY `show_price_FK` (`show_id`),
+  CONSTRAINT `show_price_FK` FOREIGN KEY (`show_id`) REFERENCES `shows` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -295,10 +313,11 @@ DROP TABLE IF EXISTS `show_price_week_days`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `show_price_week_days` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `show_price_id` int(10) unsigned NOT NULL,
   `day_of_week` tinyint(3) unsigned NOT NULL,
-  `status` varchar(100) NOT NULL
+  `status` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -319,13 +338,12 @@ DROP TABLE IF EXISTS `show_week_days`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `show_week_days` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `show_id` int(11) DEFAULT NULL,
   `day_of_week` tinyint(4) DEFAULT NULL,
   `status` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `show_id` (`show_id`),
-  CONSTRAINT `show_week_days_ibfk_1` FOREIGN KEY (`show_id`) REFERENCES `shows` (`id`)
+  KEY `show_id` (`show_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -346,7 +364,7 @@ DROP TABLE IF EXISTS `shows`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `shows` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `screen_id` int(11) DEFAULT NULL,
   `movie_id` int(11) DEFAULT NULL,
   `screen_type` varchar(50) DEFAULT NULL,
@@ -358,10 +376,8 @@ CREATE TABLE `shows` (
   `status` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `theater_id` (`screen_id`),
-  KEY `movie_id` (`movie_id`),
-  CONSTRAINT `shows_ibfk_1` FOREIGN KEY (`screen_id`) REFERENCES `theater` (`id`),
-  CONSTRAINT `shows_ibfk_2` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  KEY `movie_id` (`movie_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -382,14 +398,13 @@ DROP TABLE IF EXISTS `shows_deleted`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `shows_deleted` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `show_id` int(11) DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   `day_of_week` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `show_id` (`show_id`),
-  CONSTRAINT `shows_deleted_ibfk_1` FOREIGN KEY (`show_id`) REFERENCES `shows` (`id`)
+  KEY `show_id` (`show_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -410,13 +425,13 @@ DROP TABLE IF EXISTS `theater`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `theater` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `theater_name` varchar(100) DEFAULT NULL,
   `capacity` int(11) DEFAULT NULL,
   `is_online` tinyint(1) DEFAULT NULL,
   `city_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -437,7 +452,7 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
-  `user_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `phone_number` varchar(20) DEFAULT NULL,
@@ -464,7 +479,8 @@ DROP TABLE IF EXISTS `user_theater`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_theater` (
   `id` int(10) unsigned NOT NULL,
-  `theater_id` int(10) unsigned NOT NULL
+  `theater_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -490,4 +506,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-18 12:50:39
+-- Dump completed on 2023-12-18 14:19:16
